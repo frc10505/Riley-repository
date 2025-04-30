@@ -1,4 +1,4 @@
-package frc.team10505.robot;
+package frc.team10505.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -10,9 +10,9 @@ public class AlgaeSubsytem extends SubsystemBase {
     /*Constants */
     final int kAlgaeIntakeMotorID = 7;
 
-    /*Motors*/
+    /*Motor Controllers*/
     final SparkMax intakemotor = new SparkMax(kAlgaeIntakeMotorID, MotorType.kBrushless);
-private SparkMaxConfig IntakeMotorConfig = new SparkMaxConfig(kAlgaeIntakeMotorID, null)
+private SparkMaxConfig IntakeMotorConfig = new SparkMaxConfig();
     /*Encoder*/
 
 public AlgaeSubsytem (){
