@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -13,6 +14,8 @@ private TalonFX follower;
 private TalonFX lead;
 private PIDController elevatorController;
 private ElevatorFeedforward elevatorFeedForward;
+
+private double setpoint = 0;
 
     public ElevatorSubsystem() {
         if (Utils.isSimulation()) {
@@ -27,7 +30,7 @@ elevatorController = new  PIDController(0, 0, 0);
 elevatorFeedForward = new ElevatorFeedforward(0, 0, 0);
         }
     }
-
+public Command setpoint
     @Override
     public void periodic() {
 
