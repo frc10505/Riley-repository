@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase {
     // Variables
-private TalonFX follower;
-private TalonFX lead;
-private PIDController elevatorController;
-private ElevatorFeedforward elevatorFeedForward;
+    private TalonFX follower;
+    private TalonFX lead;
+    private PIDController elevatorController;
+    private ElevatorFeedforward elevatorFeedForward;
 
-private double setpoint = 0;
+    private double setpoint = 0;
 
     public ElevatorSubsystem() {
         if (Utils.isSimulation()) {
@@ -24,13 +24,17 @@ private double setpoint = 0;
             elevatorController = new PIDController(0, 0, 0);
             elevatorFeedForward = new ElevatorFeedforward(0, 0, 0);
         } else {
-follower = new TalonFX(0, getName());
-lead = new TalonFX(0, getName());
-elevatorController = new  PIDController(0, 0, 0);
-elevatorFeedForward = new ElevatorFeedforward(0, 0, 0);
+            follower = new TalonFX(0, getName());
+            lead = new TalonFX(0, getName());
+            elevatorController = new PIDController(0, 0, 0);
+            elevatorFeedForward = new ElevatorFeedforward(0, 0, 0);
         }
     }
-public Command setpoint
+
+    public Command setpoint() {
+        return runEnd(null, null);
+    }
+
     @Override
     public void periodic() {
 

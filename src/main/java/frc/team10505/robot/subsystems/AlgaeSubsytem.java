@@ -21,36 +21,34 @@ public class AlgaeSubsytem extends SubsystemBase {
     private SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
     private SparkMaxConfig intakeMotorConfig = new SparkMaxConfig();
 
-
     /* Motor Controllers */
     final SparkMax intakemotor = new SparkMax(algaeIntakeMotorID, MotorType.kBrushless);
     private SparkMaxConfig IntakeMotorConfig = new SparkMaxConfig();
-    /*Motor Ids*/
-
-
+    /* Motor Ids */
 
     private SparkMax pivotMotor = new SparkMax(pivotMotorId, MotorType.kBrushless);
-    
+
     private SparkMax intakeMotor = new SparkMax(intakeMotorId, MotorType.kBrushless);
-   
 
-
-
-public AlgaeSubsytem() {
+    public AlgaeSubsytem() {
     }
 
     /* Sim Variables */
     private final Mechanism2d pivotMech = new Mechanism2d(2, 2);
     private MechanismRoot2d pivotRoot = pivotMech.getRoot("PivotRoot", 1, 1);
     private MechanismLigament2d pivotViz = pivotRoot.append(new MechanismLigament2d("PivotViz", .7, 0));
-private SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 80, SingleJointedArmSim.estimateMOI(0.305, 2), 
-0.305, Units.degreesToRadians(-110), Units.degreesToRadians(-110), true, startingAngle);
+    private SingleJointedArmSim pivotSim = new SingleJointedArmSim(DCMotor.getNEO(1), 80,
+            SingleJointedArmSim.estimateMOI(0.305, 2),
+            0.305, Units.degreesToRadians(-110), Units.degreesToRadians(-110), true, startingAngle);
 
-/*Pivot Motor Config */
-pivotMotorConfig.idleMode(IdleMode.kBrake);
-pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit,
-        kPivotMotorCurrentLimit);
-pivotMotorConfig.absoluteEncoder.positionConversionFactor(pivotEncoderScale); // Angle encoder scale
-pivotMotorConfig.absoluteEncoder.zeroOffset(pivotEncoderOffset); // Angle encoder offset
-pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // /*Pivot Motor Config */
+    // pivotMotorConfig.idleMode(IdleMode.kBrake);
+    // pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit,
+    // kPivotMotorCurrentLimit);
+    // pivotMotorConfig.absoluteEncoder.positionConversionFactor(pivotEncoderScale);
+    // // Angle encoder scale
+    // pivotMotorConfig.absoluteEncoder.zeroOffset(pivotEncoderOffset); // Angle
+    // encoder offset
+    // pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters,
+    // PersistMode.kPersistParameters);
 }
