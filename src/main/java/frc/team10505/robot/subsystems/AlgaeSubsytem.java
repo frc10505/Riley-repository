@@ -55,10 +55,10 @@ public class AlgaeSubsytem extends SubsystemBase {
             SingleJointedArmSim.estimateMOI(0.305, 2),
             0.305, Units.degreesToRadians(-110), Units.degreesToRadians(-110), true, startingAngle);}
 
-    // /* Pivot Motor Config */
+    // /* Pivot Config */
     // pivotMotorConfig.idleMode(IdleMode.kBrake)pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit,kPivotMotorCurrentLimit)pivotMotorConfig.absoluteEncoder.positionConversionFactor(pivotEncoderScale);
 
-    // // Angle encoder scale
+    // // Angle encoder
     // pivotMotorConfig.absoluteEncoder.zeroOffset(pivotEncoderOffset) // Angle
     // encoder offset pivotMotor.configure(pivotMotorConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
 
@@ -71,7 +71,7 @@ public class AlgaeSubsytem extends SubsystemBase {
 //         SmartDashboard.putNumber("Pivot Calculated Effort", getEffort());
 //         SmartDashboard.putNumber("Algae Intake Speed", intakeSpeed);
 
-//         // Sim updating stuff
+//         // Sim updating
 //         if (Utils.isSimulation() || Utils.isReplay()) {
 //             pivotSim.setInput(getEffort());
 //             pivotSim.update(0.01);
@@ -80,8 +80,6 @@ public class AlgaeSubsytem extends SubsystemBase {
 //             intakeSim.setInput(intakeSpeed);
 //             intakeSim.update(0.01);
 //             intakeViz.setAngle(Units.radiansToDegrees(intakeViz.getAngle() + (intakeSpeed * 0.05)));
-//             // woah so cool. uses trigonometry so the intake wheel can follow the pivot on
-//             // the sim viz
 //             intakeRoot.setPosition((Math.cos(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75,
 //                     (Math.sin(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75);
 
