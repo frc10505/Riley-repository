@@ -3,6 +3,7 @@ package frc.team10505.robot.subsystems;
 import com.ctre.phoenix6.Utils;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AlgaeSubsystem extends SubsystemBase {
@@ -53,11 +55,13 @@ public class AlgaeSubsystem extends SubsystemBase {
     private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
             0.000000000001, 4), DCMotor.getNEO(1), 6);
 
-    private final double kPivotMotorCurrentLimit = 1;
+    private final int kPivotMotorCurrentLimit = 1;
     private final double pivotEncoderScale = 1;
     private double pivotSetpoint = -90;
     private final SparkMax intakeMotor = new SparkMax(ALGAE_INTAKE_MOTOR_ID, MotorType.kBrushless);
     private double intakeSpeed = 0;
+    public boolean coasting = false;
+
     // Constructor
     public AlgaeSubsystem() {
         SmartDashboard.putData("Pivot Sim", pivotMech);
@@ -69,14 +73,20 @@ public class AlgaeSubsystem extends SubsystemBase {
         }
         // /* Pivot Config */
         pivotMotorConfig.idleMode(IdleMode.kBrake);
-       // pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit, kPivotMotorCurrentLimit);
+        pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit, kPivotMotorCurrentLimit);
         pivotMotorConfig.absoluteEncoder.positionConversionFactor(pivotEncoderScale);
     }
 
-    // Angle encoder
-    //pivotMotorConfig.absoluteEncoder.zeroOffset(pivotEncoderOffset) // Angle
-
-    //Encoder offset pivotMotor.configure(pivotMotorConfig,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    public Command setAngle(double Angle) {
+        return run(() -> {
+            pivotSetpoint = Angle;
+        });
+    }
+    public Command setVoltage(double Voltage) {
+        return run(() -> {
+            pivotMotor.setVoltage(Voltage);
+        });
+    }
 
     // Periodic
     @Override
@@ -102,13 +112,13 @@ public class AlgaeSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Sim Algae Intake Viz Angle", intakeViz.getAngle());
 
         } else {
-            //if (!coasting) {
+            if (!coasting) {
                 pivotMotor.setVoltage(getEffort());
             }
             SmartDashboard.putNumber("Algae Intake Motor Output", intakeMotor.getAppliedOutput());
             SmartDashboard.putNumber("Pivot Motor Output", pivotMotor.getAppliedOutput());
         }
-    //}
+    }
 
     private double getEffort() {
         throw new UnsupportedOperationException("Unimplemented method 'getEffort'");
