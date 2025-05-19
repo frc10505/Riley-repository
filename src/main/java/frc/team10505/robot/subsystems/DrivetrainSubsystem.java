@@ -228,6 +228,12 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
+public void configPathPlanner(){
+    try{
 
+    }catch(Exception e){
+DriverStation.reportError("Pathplanner is BAD!?!?!?", e.getStackTrace());
+    }
+}
 
 }
