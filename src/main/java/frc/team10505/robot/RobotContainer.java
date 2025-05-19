@@ -8,14 +8,15 @@ import frc.team10505.robot.subsystems.AlgaeSubsystem;
 public class RobotContainer {
  //Joysticks
 public final CommandJoystick joystick = new CommandJoystick(1);
-
+public RobotContainer() {
+    
+}
 //Subystems
 private final AlgaeSubsystem algaeSubsys = new AlgaeSubsystem();
 //Controls
 private void simAlgaePivotControls(){
     if(Utils.isSimulation()){
-        //joystick.button(1).onTrue(algaeSubsys.setAngle)
+        joystick.button(1).onTrue(algaeSubsys.setAngle(0));
     } 
 }
-
 }
