@@ -16,7 +16,7 @@ private SendableChooser<Command> autonChooser;
 public RobotContainer() {
     autonChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser",autonChooser);
-    //configDefaultCommands();
+    configDefaultCommands();
 }
 //Subystems
 private final AlgaeSubsystem algaeSubsys = new AlgaeSubsystem();

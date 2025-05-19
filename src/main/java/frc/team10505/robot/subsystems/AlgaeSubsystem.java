@@ -34,6 +34,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     private PIDController pivotController;
     private ArmFeedforward pivotFeedForward;
     public final static int ALGAE_INTAKE_MOTOR_ID = 8;
+    
     /* Motor Controllers */
     final SparkMax intakemotor = new SparkMax(algaeIntakeMotorID, MotorType.kBrushless);
     private SparkMaxConfig IntakeMotorConfig = new SparkMaxConfig();
@@ -101,13 +102,13 @@ public class AlgaeSubsystem extends SubsystemBase {
     public void periodic() {
         // dashboard stuff
         SmartDashboard.putNumber("Pivot Setpoint", pivotSetpoint);
-        //SmartDashboard.putNumber("Pivot Encoder", getPivotEncoder());
-        //SmartDashboard.putNumber("Pivot Calculated Effort", getEffort());
+        SmartDashboard.putNumber("Pivot Encoder", getPivotEncoder());
+        SmartDashboard.putNumber("Pivot Calculated Effort", getEffort());
         SmartDashboard.putNumber("Algae Intake Speed", intakeSpeed);
 
         // Sim updating
         if (Utils.isSimulation() || Utils.isReplay()) {
-            //pivotSim.setInput(getEffort());
+            pivotSim.setInput(getEffort());
             pivotSim.update(0.01);
             pivotViz.setAngle(Units.radiansToDegrees(pivotSim.getAngleRads()));
 
@@ -121,19 +122,19 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         } else {
             if (!coasting) {
-                //pivotMotor.setVoltage(getEffort());
+                pivotMotor.setVoltage(getEffort());
             }
             SmartDashboard.putNumber("Algae Intake Motor Output", intakeMotor.getAppliedOutput());
             SmartDashboard.putNumber("Pivot Motor Output", pivotMotor.getAppliedOutput());
         }
     }
 
-    // private double getPivotEncoder() {
-    //     if(Utils.isSimulation()){
-    //         return pivotViz.getAngle();
-    //     }else{
-    //         return (-pivotEncoder.getPosition() + absoluteOffset);
-    //     }
-    // }
+    private double getPivotEncoder() {
+        if(Utils.isSimulation()){
+            return pivotViz.getAngle();
+        }else{
+            return (-pivotEncoder.getPosition() + absoluteOffset);
+        }
+    }
 
 }
