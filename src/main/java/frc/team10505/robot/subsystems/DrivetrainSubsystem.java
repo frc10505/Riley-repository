@@ -125,6 +125,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
             startSimThread();
         }
     }
+
     public DrivetrainSubsystem(
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
@@ -160,7 +161,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-  
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -182,8 +182,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
     }
-
-   
 
     @Override
     public void periodic() {
@@ -209,9 +207,6 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
 
         }
 
-      
-
-
     }
 
     private void startSimThread() {
@@ -230,7 +225,7 @@ public class DrivetrainSubsystem extends TunerSwerveDrivetrain implements Subsys
     }
 public void configPathPlanner(){
     try{
-
+AutoBuilder.configure(()-> getState().Pose, this::resetPose,() -> getState().Speeds, (speeds, feedForward) -> setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds).withWheelForceFeedforwardsX(feedForward.robotRelativeForcesXNewtons()).withWheelForceFeedforwardsY(feedForward.robotRelativeForcesYNewtons())), new PPHolonomicDriveController(new PIDConstants(10, 0), new PIDConstants(7, 0, 0)), RobotConfig.fromGUISettings(),()-> DriverStation.getAlliance().orElse (Alliance.Blue) == Alliance.Red, this);
     }catch(Exception e){
 DriverStation.reportError("Pathplanner is BAD!?!?!?", e.getStackTrace());
     }
