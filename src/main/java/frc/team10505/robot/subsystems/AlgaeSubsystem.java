@@ -35,6 +35,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     private PIDController pivotController;
     private ArmFeedforward pivotFeedForward;
     public final static int ALGAE_INTAKE_MOTOR_ID = 8;
+    private double simSpeed = 0;
 
     /* Motor Controllers */
     final SparkMax intakemotor = new SparkMax(algaeIntakeMotorID, MotorType.kBrushless);
@@ -51,11 +52,22 @@ public class AlgaeSubsystem extends SubsystemBase {
             SingleJointedArmSim.estimateMOI(0.305, 2),
             0.305, Units.degreesToRadians(-110), Units.degreesToRadians(110), true, startingAngle);
 
-    private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
-    private MechanismRoot2d intakeRoot = intakeMech.getRoot("IntakeRoot", 1, 1);
-    private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("IntakeViz", .7, 0));
-    private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
-            0.000000000001, 4), DCMotor.getNEO(1), 6);
+private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
+
+private MechanismRoot2d intakeRoot = intakeMech.getRoot("Intake Root", 1, 1);
+
+private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("intake viz", 0.5, 90));
+
+private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.000001, 
+2), DCMotor.getNEO(1), 0);
+
+
+
+    // private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
+    // private MechanismRoot2d intakeRoot = intakeMech.getRoot("IntakeRoot", 1, 1);
+    // private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("IntakeViz", .7, 0));
+    // private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
+    //         0.000000000001, 4), DCMotor.getNEO(1), 6);
 
     private final int kPivotMotorCurrentLimit = 1;
     private final double pivotEncoderScale = 1;
@@ -75,16 +87,16 @@ public class AlgaeSubsystem extends SubsystemBase {
             pivotMotorConfig = new SparkMaxConfig();
             intakeMotorConfig = new SparkMaxConfig();
         }
+        SmartDashboard.putData("Intake Sim", intakeMech);
+
         /* Pivot Configurator */
         pivotMotorConfig.idleMode(IdleMode.kBrake);
         pivotMotorConfig.smartCurrentLimit(kPivotMotorCurrentLimit, kPivotMotorCurrentLimit);
         pivotMotorConfig.absoluteEncoder.positionConversionFactor(pivotEncoderScale);
 
-
         if (Utils.isSimulation() || Utils.isReplay()) {
             pivotController = new PIDController(1, 0, 0);
-            pivotFeedForward = new ArmFeedforward(0, .173
-            , 0.15, 0.15);
+            pivotFeedForward = new ArmFeedforward(0, .173, 0.15, 0.15);
         } else {
             pivotController = new PIDController(0, 0, 0);
             pivotFeedForward = new ArmFeedforward(0, 0, 0, 0);
@@ -96,10 +108,10 @@ public class AlgaeSubsystem extends SubsystemBase {
             return pivotFeedForward
                     .calculate(Units.degreesToRadians(getPivotEncoder()), 0)
                     + pivotController.calculate(pivotViz.getAngle(), pivotSetpoint);
-        }else{
+        } else {
             return pivotFeedForward
-            .calculate(Units.degreesToRadians(getPivotEncoder()), 0)
-            + pivotController.calculate(getPivotEncoder(), pivotSetpoint);
+                    .calculate(Units.degreesToRadians(getPivotEncoder()), 0)
+                    + pivotController.calculate(getPivotEncoder(), pivotSetpoint);
         }
     }
 
@@ -115,6 +127,22 @@ public class AlgaeSubsystem extends SubsystemBase {
         });
     }
 
+    public Command runIntake(double speed) {
+        if (Utils.isSimulation()) {
+            return runEnd(() -> {
+                simSpeed = speed;
+            }, () -> {
+                simSpeed = 0;
+            });
+        } else {
+            return runEnd(() -> {
+                intakeMotor.set(speed);
+            }, () -> {
+                intakeMotor.set(0);
+            });
+        }
+    }
+
     // Periodic Stuff
     @Override
     public void periodic() {
@@ -125,16 +153,16 @@ public class AlgaeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Algae Intake Speed", intakeSpeed);
 
         // Sim Updating
-        if (Utils.isSimulation() || Utils.isReplay()) {
+        if (Utils.isSimulation()) {
             pivotSim.setInput(getEffort());
             pivotSim.update(0.01);
             pivotViz.setAngle(Units.radiansToDegrees(pivotSim.getAngleRads()));
-
-            intakeSim.setInput(intakeSpeed);
             intakeSim.update(0.01);
-            intakeViz.setAngle(Units.radiansToDegrees(intakeViz.getAngle() + (intakeSpeed * 0.05)));
-            intakeRoot.setPosition((Math.cos(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75,
-                    (Math.sin(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75);
+            intakeSim.setInput(simSpeed);
+            intakeViz.setAngle(intakeViz.getAngle() + intakeSim.getAngularVelocityRPM() * 0.05);
+            // intakeViz.setAngle(Units.radiansToDegrees(intakeViz.getAngle() + intakeSim.getAngularVelocityRPM() * 0.05));
+            // intakeRoot.setPosition((Math.cos(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75,
+            //         (Math.sin(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75);
 
             SmartDashboard.putNumber("Sim Algae Intake Viz Angle", intakeViz.getAngle());
             SmartDashboard.putData("pivotEncoder", intakeMech);

@@ -12,11 +12,13 @@ import frc.team10505.robot.subsystems.AlgaeSubsystem;
 public class RobotContainer {
     // Joysticks
     public final CommandJoystick joystick = new CommandJoystick(0);
+    public final CommandJoystick joystick2 = new CommandJoystick(1);
+
     // private SendableChooser<Command> autonChooser;
 
     public RobotContainer() {
         simAlgaePivotControls();
-        
+        simAlgaeIntakeControls();
         // autonChooser = AutoBuilder.buildAutoChooser();
         // SmartDashboard.putData("Auto Chooser",autonChooser);
         // configDefaultCommands();
@@ -36,5 +38,12 @@ public class RobotContainer {
         }
     }
 
-    // Flywheel Weird Intake Thing
+    // Flywheel thing
+    private void simAlgaeIntakeControls() {
+        if (Utils.isSimulation()) {
+            joystick2.button(1).whileTrue(algaeSubsys.runIntake(.5));
+            joystick2.button(2).whileTrue(algaeSubsys.runIntake(-.5));
+
+        }
+    }
 }
