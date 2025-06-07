@@ -52,22 +52,22 @@ public class AlgaeSubsystem extends SubsystemBase {
             SingleJointedArmSim.estimateMOI(0.305, 2),
             0.305, Units.degreesToRadians(-110), Units.degreesToRadians(110), true, startingAngle);
 
-private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
+    private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
 
-private MechanismRoot2d intakeRoot = intakeMech.getRoot("Intake Root", 1, 1);
+    private MechanismRoot2d intakeRoot = intakeMech.getRoot("Intake Root", 1, 1);
 
-private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("intake viz", 0.5, 90));
+    private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("intake viz", 0.5, 90));
 
-private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.000001, 
-2), DCMotor.getNEO(1), 0);
-
-
+    private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1), 0.000001,
+            2), DCMotor.getNEO(1), 0);
 
     // private final Mechanism2d intakeMech = new Mechanism2d(2, 2);
     // private MechanismRoot2d intakeRoot = intakeMech.getRoot("IntakeRoot", 1, 1);
-    // private MechanismLigament2d intakeViz = intakeRoot.append(new MechanismLigament2d("IntakeViz", .7, 0));
-    // private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
-    //         0.000000000001, 4), DCMotor.getNEO(1), 6);
+    // private MechanismLigament2d intakeViz = intakeRoot.append(new
+    // MechanismLigament2d("IntakeViz", .7, 0));
+    // private FlywheelSim intakeSim = new
+    // FlywheelSim(LinearSystemId.createFlywheelSystem(DCMotor.getNEO(1),
+    // 0.000000000001, 4), DCMotor.getNEO(1), 6);
 
     private final int kPivotMotorCurrentLimit = 1;
     private final double pivotEncoderScale = 1;
@@ -143,6 +143,14 @@ private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSys
         }
     }
 
+    private double getPivotEncoder() {
+        if (Utils.isSimulation()) {
+            return pivotViz.getAngle();
+        } else {
+            return (-pivotEncoder.getPosition() + absoluteOffset);
+        }
+    }
+
     // Periodic Stuff
     @Override
     public void periodic() {
@@ -160,28 +168,27 @@ private FlywheelSim intakeSim = new FlywheelSim(LinearSystemId.createFlywheelSys
             intakeSim.update(0.01);
             intakeSim.setInput(simSpeed);
             intakeViz.setAngle(intakeViz.getAngle() + intakeSim.getAngularVelocityRPM() * 0.05);
-            // intakeViz.setAngle(Units.radiansToDegrees(intakeViz.getAngle() + intakeSim.getAngularVelocityRPM() * 0.05));
-            // intakeRoot.setPosition((Math.cos(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75,
-            //         (Math.sin(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75);
+            // intakeViz.setAngle(Units.radiansToDegrees(intakeViz.getAngle() +
+            // intakeSim.getAngularVelocityRPM() * 0.05));
+            // intakeRoot.setPosition((Math.cos(Units.degreesToRadians(pivotViz.getAngle()))
+            // * 0.56) + 0.75,
+            // (Math.sin(Units.degreesToRadians(pivotViz.getAngle())) * 0.56) + 0.75);
 
             SmartDashboard.putNumber("Sim Algae Intake Viz Angle", intakeViz.getAngle());
             SmartDashboard.putData("pivotEncoder", intakeMech);
 
         } else {
-            if (!coasting) {
-                pivotMotor.setVoltage(getEffort());
-            }
-            SmartDashboard.putNumber("Algae Intake Motor Output", intakeMotor.getAppliedOutput());
-            SmartDashboard.putNumber("Pivot Motor Output", pivotMotor.getAppliedOutput());
+             pivotMotor.setVoltage(getEffort());
+            SmartDashboard.putNumber("PivotEncoder", getPivotEncoder());
+            SmartDashboard.putNumber("Pivot Motor Output",
+            pivotMotor.getAppliedOutput());
+            SmartDashboard.putNumber(" pivot calculated effort",
+            pivotMotor.getMotorTemperature());
+        }
+            // if (!coasting) {
+            //     pivotMotor.setVoltage(getEffort());
+            // }
+            // SmartDashboard.putNumber("Algae Intake Motor Output", intakeMotor.getAppliedOutput());
+            // SmartDashboard.putNumber("Pivot Motor Output", pivotMotor.getAppliedOutput());
         }
     }
-
-    private double getPivotEncoder() {
-        if (Utils.isSimulation()) {
-            return pivotViz.getAngle();
-        } else {
-            return (-pivotEncoder.getPosition() + absoluteOffset);
-        }
-    }
-
-}
